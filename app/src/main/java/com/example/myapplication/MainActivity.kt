@@ -24,9 +24,12 @@ import com.example.myapplication.ui.AddContactScreen
 import com.example.myapplication.ui.ChatDetailScreen
 import com.example.myapplication.ui.ChatListScreen
 import com.example.myapplication.ui.ContactDetailsScreen
+import com.example.myapplication.ui.MainScreen
 import com.example.myapplication.ui.OtpVerificationScreen
 import com.example.myapplication.ui.PhoneSearchScreen
+import com.example.myapplication.ui.RegisterScreen
 import com.example.myapplication.ui.SessionListScreen
+import com.example.myapplication.ui.SplashScreen
 import com.example.myapplication.ui.UserProfileScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
@@ -44,8 +47,8 @@ class MainActivity : ComponentActivity() {
                 )
                 val sampleChats = listOf(
                     Chat(1, "علی رضایی", "سلام چطوری؟", "12:30", 2),
-                    Chat(2, "مینا حسینی", "دیدم فیلم جدید رو؟", "دیروز", 0),
-                    Chat(3, "سارا موسوی", "بفرست فایل رو لطفا", "9:15", 1),
+                    Chat(3, "شاهین موسوی", "بفرست فایل رو لطفا", "9:15", 1),
+                    Chat(2, "مینا حسینی", "فردا میری پادگان؟", "دیروز", 0),
                 )
                 val sampleSessions = listOf(
                     Session(
@@ -64,8 +67,21 @@ class MainActivity : ComponentActivity() {
                         "2025-07-17 17:55"
                     ),
                 )
-                NavHost(navController = navController, startDestination = "phone") {
-
+                NavHost(navController = navController, startDestination = "main") {
+                    composable("main") {
+                        MainScreen(navController)
+                    }
+                    composable("splash") {
+                        SplashScreen(
+                            onLoginClick = { -> navController.navigate("phone") },
+                            onSignupClick = { -> navController.navigate("sign-up") }
+                        )
+                    }
+                    composable("sign-up") {
+                        RegisterScreen(onNext = { phone ->
+                            navController.navigate("otp/${phone}")
+                        })
+                    }
                     composable("phone") {
                         PhoneNumberScreen(onNext = { phone ->
                             navController.navigate("otp/${phone}")
