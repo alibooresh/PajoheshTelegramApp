@@ -1,12 +1,17 @@
 package com.example.myapplication
 
 import ContactListScreen
+import EditProfileScreen
 import PhoneNumberScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
@@ -30,6 +35,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
+                var isEditing by remember { mutableStateOf(false) }
                 val navController = rememberNavController()
                 val sampleMessages = listOf(
                     Message(1, 1, "علی رضایی", "سلام! خوبی؟", "12:31", false),
@@ -74,12 +80,43 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("profile/{phone}") { backStackEntry ->
-                        val phone = backStackEntry.arguments?.getString("phone") ?: ""
-                        UserProfileScreen(phone,
-                            onOpenContacts = { -> navController.navigate("contacts") },
-                            onSearchPhone = { -> navController.navigate("phone-search") },
-                            onSessionsClick = { -> navController.navigate("sessions") },
-                            onChatListClick = { -> navController.navigate("chat_list") })
+                        val phoneNumber = backStackEntry.arguments?.getString("phone") ?: ""
+                        var isEditing by remember { mutableStateOf(false) }
+                        var userName by remember { mutableStateOf("نام پیش‌فرض") }
+                        var username by remember { mutableStateOf("username") }
+                        var bio by remember { mutableStateOf("بیو") }
+                        var userId = 1234L
+                        var birthDate = "1370/01/01"
+
+                        if (isEditing) {
+                            EditProfileScreen(
+                                initialName = userName,
+                                initialUsername = username,
+                                initialBio = bio,
+                                onSave = { newName, newUsername, newBio ->
+                                    userName = newName
+                                    username = newUsername
+                                    bio = newBio
+                                    isEditing = false
+                                },
+                                onBack = { isEditing = false }
+                            )
+                        } else {
+                            UserProfileScreen(
+                                phoneNumber = phoneNumber,
+                                userName = userName,
+                                userId = userId,
+                                bio = bio,
+                                username = username,
+                                birthDate = birthDate,
+                                onLogout = { -> navController.navigate("phone") },
+                                onEditProfileClick = { isEditing = true },
+                                onOpenContacts = { -> navController.navigate("contacts") },
+                                onSearchPhone = { -> navController.navigate("phone-search") },
+                                onSessionsClick = { -> navController.navigate("sessions") },
+                                onChatListClick = { -> navController.navigate("chat_list") }
+                            )
+                        }
                     }
                     composable("contacts") {
                         ContactListScreen(
@@ -127,6 +164,16 @@ class MainActivity : ComponentActivity() {
                         SessionListScreen(sessions = sampleSessions, onSessionClick = { session ->
                             println("Clicked session: ${session.ipAddress}")
                         })
+                    }
+                    composable("add_contact") {
+                        AddContactScreen(
+                            onSave = { name, phone ->
+                                navController.popBackStack()
+                            },
+                            onCancel = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                     composable("add_contact") {
                         AddContactScreen(

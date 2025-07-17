@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 fun UserProfileScreen(
     phoneNumber: String,
     userName: String = "علی",
-    userId: String = "123456789",
+    userId: Long = 123456789L,
     bio: String = "این بایوگرافی من است.",
     username: String = "@aliuser",
     birthDate: String = "01/01/1370",
@@ -36,6 +36,7 @@ fun UserProfileScreen(
     onSessionsClick: () -> Unit = {},
     onSearchPhone: () -> Unit = {},
     onOpenContacts: () -> Unit = {},
+    onEditProfileClick: () -> Unit = {},
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -66,11 +67,18 @@ fun UserProfileScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            InfoRow(label = "شناسه (ID):", value = userId)
+            InfoRow(label = "شناسه (ID):", value = userId.toString())
             InfoRow(label = "بایوگرافی:", value = bio)
             InfoRow(label = "شناسه کاربری:", value = username)
             InfoRow(label = "تاریخ تولد:", value = birthDate)
 
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = { onEditProfileClick() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("ویرایش پروفایل")
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
